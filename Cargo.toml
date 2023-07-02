@@ -1,0 +1,27 @@
+[package]
+name = "nostr-bins"
+version = "0.1.0-unstable"
+edition = "2021"
+authors = ["Mike Dilger <mike@mikedilger.com>"]
+description = "Binaries for nostr"
+repository = "https://github.com/mikedilger/nostr-bins"
+documentation = "https://docs.rs/nostr-bins"
+readme = "README.md"
+keywords = [ "nostr" ]
+license = "MIT"
+
+[dependencies]
+base64 = "0.21"
+bech32 = "0.9"
+hex = "0.4"
+http = "0.2"
+k256 = { version = "0.13", features = [ "schnorr", "ecdh" ] }
+nostr-types = { git = "https://github.com/mikedilger/nostr-types" }
+rand = "0.8"
+rand_core = "0.6"
+reqwest = { version = "0.11", default-features = false, features = [ "blocking", "json", "rustls-tls-webpki-roots"  ] }
+rpassword = "7.2"
+serde = { version = "1.0", features = [ "derive" ] }
+serde_json = "1.0"
+tungstenite = { version = "0.18", features = [ "rustls-tls-webpki-roots" ] }
+zeroize = "1.5"
