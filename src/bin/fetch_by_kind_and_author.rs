@@ -27,7 +27,7 @@ fn main() {
     let key: PublicKeyHex = author_key.into();
     let filter = Filter {
         kinds: vec![kind],
-        authors: vec![key.prefix(32)],
+        authors: vec![key],
         .. Default::default()
     };
 

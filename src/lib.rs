@@ -26,7 +26,7 @@ pub fn fetch_by_filter(url: &str, filter: Filter) -> Vec<Event> {
 
 pub fn fetch_by_id(url: &str, id: IdHex) -> Option<Event> {
     let mut filter = Filter::new();
-    filter.add_id(id.prefix(32));
+    filter.add_id(&id);
     let events = fetch_by_filter(url, filter);
     if events.is_empty() {
         None

@@ -17,7 +17,7 @@ fn main() {
     let pkh = PublicKeyHex::try_from_str(&pubkeyhex).unwrap();
 
     let mut filter = Filter::new();
-    filter.add_author(pkh.prefix(32));
+    filter.add_author(&pkh);
     filter.add_event_kind(EventKind::Metadata);
     let events = nostr_bins::fetch_by_filter(&relay_url, filter);
     if !events.is_empty() {
