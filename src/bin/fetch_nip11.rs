@@ -15,7 +15,16 @@ fn main() {
         None => panic!("Usage: fetch_nip11 <RelayURL>"),
     };
 
-    let (host,_uri) = nostr_bins::url_to_host_and_uri(&url);
+    let (host,uri) = nostr_bins::url_to_host_and_uri(&url);
+
+    let scheme = match uri.scheme() {
+        Some(refscheme) => match refscheme.as_str() {
+            "wss" => "https",
+            "ws" => "http",
+            u => panic!("Unknown scheme {}", u),
+        },
+        None => panic!("Relay URL has no scheme."),
+    };
 
     let client = Client::builder()
         .redirect(Policy::none())
@@ -25,7 +34,7 @@ fn main() {
         .build()
         .unwrap();
     let response = client
-        .get(format!("https://{}", host))
+        .get(format!("{}://{}", scheme, host))
         .header("Host", host)
         .header("Accept", "application/nostr+json")
         .send()
