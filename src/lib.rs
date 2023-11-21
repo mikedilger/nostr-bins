@@ -31,7 +31,7 @@ pub fn fetch_by_id(url: &str, id: IdHex) -> Option<Event> {
     if events.is_empty() {
         None
     } else {
-        Some(events[1].clone())
+        Some(events[0].clone())
     }
 }
 
