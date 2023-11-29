@@ -51,6 +51,7 @@ pub(crate) fn fetch(host: String, uri: Uri, wire: String) -> Vec<Event> {
 
         match message {
             Message::Text(s) => {
+                println!("RAW MESSAGE: {}", s);
                 let relay_message: RelayMessage =
                     serde_json::from_str(&s).expect(&s);
                 match relay_message {
