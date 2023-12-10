@@ -1,6 +1,7 @@
 [submodule "vendor/nostr-types"]
 	path = vendor/nostr-types
-	url = https://github.com/mikedilger/nostr-types
+  url = https://github.com/mikedilger/nostr-types
+  branch = 661273cf
 [submodule "vendor/nip44"]
 	path = vendor/nip44
 	url = https://github.com/mikedilger/nip44
