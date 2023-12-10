@@ -799,7 +799,7 @@ dependencies = [
 [[package]]
 name = "nostr-types"
 version = "0.7.0-unstable"
-source = "git+https://github.com/mikedilger/nostr-types#4648203c10547e6496ed7017745e1fcb5c06bd12"
+source = "git+https://github.com/mikedilger/nostr-types#661273cfaf8ab164d8ad09959d4194e3ace05fff"
 dependencies = [
  "aes",
  "base64 0.21.5",
