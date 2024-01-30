@@ -56,6 +56,7 @@ pub(crate) fn fetch(host: String, uri: Uri, wire: String) -> Vec<Event> {
                     serde_json::from_str(&s).expect(&s);
                 match relay_message {
                     RelayMessage::Event(_, e) => events.push(*e),
+                    RelayMessage::Closed(_, msg) => println!("CLOSED: {}", msg),
                     RelayMessage::Notice(s) => println!("NOTICE: {}", s),
                     RelayMessage::Eose(_) => {
                         let message = ClientMessage::Close(SubscriptionId("111".to_owned()));
@@ -139,6 +140,7 @@ pub(crate) fn post(host: String, uri: Uri, wire: String) {
                 serde_json::from_str(&s).expect(&s);
             match relay_message {
                 RelayMessage::Event(_, e) => println!("EVENT: {}", serde_json::to_string(&e).unwrap()),
+                RelayMessage::Closed(_, msg) => println!("CLOSED: {}", msg),
                 RelayMessage::Notice(s) => println!("NOTICE: {}", s),
                 RelayMessage::Eose(_) => println!("EOSE"),
                 RelayMessage::Ok(_id, ok, reason) => println!("OK: ok={} reason={}", ok, reason),
