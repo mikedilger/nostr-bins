@@ -38,9 +38,15 @@ pub fn fetch_by_id(url: &str, id: IdHex) -> Option<Event> {
 pub fn post_event(url: &str, event: Event) {
     let (host,uri) = url_to_host_and_uri(url);
     let wire = event_to_wire(event);
+    println!("wire={}", wire);
     post(host, uri, wire)
 }
 
 pub fn print_event(event: &Event) {
     println!("{}", serde_json::to_string(event).expect("Cannot serialize event to JSON"));
+}
+
+pub fn send_raw_message(url: &str, wire: String) {
+    let (host,uri) = url_to_host_and_uri(url);
+    send_message(host, uri, wire)
 }

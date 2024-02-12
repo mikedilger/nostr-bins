@@ -16,5 +16,7 @@ fn main() {
 
     let event: Event = serde_json::from_str(&s).unwrap();
 
+    println!("About to post");
+
     nostr_bins::post_event(&relay_url, event);
 }
