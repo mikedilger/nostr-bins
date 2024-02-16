@@ -15,6 +15,7 @@ fn main() {
     std::io::stdin().read_to_string(&mut s).unwrap();
 
     let event: Event = serde_json::from_str(&s).unwrap();
+    event.verify(None).unwrap();
 
     println!("About to post");
 
