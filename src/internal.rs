@@ -204,7 +204,7 @@ pub(crate) fn send_message(host: String, uri: Uri, wire: String) {
             Message::Text(s) => {
                 println!("RAW MESSAGE: {}", s);
                 std::thread::sleep(std::time::Duration::new(1,0));
-                websocket.write_message(Message::Text(r#"["CLOSE","2"]"#.to_string()));
+                let _ = websocket.write_message(Message::Text(r#"["CLOSE","2"]"#.to_string()));
             }
             Message::Binary(_) => println!("IGNORING BINARY MESSAGE"),
             Message::Ping(vec) => if let Err(e) = websocket.write_message(Message::Pong(vec)) {
