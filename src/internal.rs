@@ -101,6 +101,77 @@ pub(crate) fn fetch(host: String, uri: Uri, wire: String) -> Vec<Event> {
     events
 }
 
+pub(crate) fn listen<F>(host: String, uri: Uri, wire: String, op: F)
+where F: Fn(Event)
+{
+    let key: [u8; 16] = rand::random();
+    let request = http::request::Request::builder()
+        .method("GET")
+        .header("Host", host)
+        .header("Connection", "Upgrade")
+        .header("Upgrade", "websocket")
+        .header("Sec-WebSocket-Version", "13")
+        .header(
+            "Sec-WebSocket-Key",
+            base64::engine::general_purpose::STANDARD.encode(key),
+        )
+        .uri(uri)
+        .body(())
+        .expect("Could not build request");
+
+    let (mut websocket, _response) =
+        tungstenite::connect(request).expect("Could not connect to relay");
+
+    websocket
+        .write_message(Message::Text(wire))
+        .expect("Could not send message to relay");
+
+    loop {
+        let message = match websocket.read_message() {
+            Ok(m) => m,
+            Err(e) => {
+                println!("Problem reading from websocket: {}", e);
+                return;
+            }
+        };
+
+        match message {
+            Message::Text(s) => {
+                println!("RAW MESSAGE: {}", s);
+                let relay_message: RelayMessage =
+                    serde_json::from_str(&s).expect(&s);
+                match relay_message {
+                    RelayMessage::Event(_, e) => {
+                        op(*e);
+                    }
+                    RelayMessage::Closed(_, msg) => println!("CLOSED: {}", msg),
+                    RelayMessage::Notice(s) => println!("NOTICE: {}", s),
+                    RelayMessage::Eose(_) => {
+                        // Don't close the subscription, keep listening
+                    }
+                    RelayMessage::Ok(_id, ok, reason) => {
+                        println!("OK: ok={} reason={}", ok, reason)
+                    }
+                    RelayMessage::Auth(challenge) => {
+                        // FIXME
+                        println!("AUTH: {}", challenge)
+                    }
+                }
+            }
+            Message::Binary(_) => println!("IGNORING BINARY MESSAGE"),
+            Message::Ping(vec) => if let Err(e) = websocket.write_message(Message::Pong(vec)) {
+                println!("Unable to pong: {}", e);
+            }
+            Message::Pong(_) => println!("IGNORING PONG"),
+            Message::Close(_) => {
+                println!("Closing");
+                break;
+            }
+            Message::Frame(_) => println!("UNEXPECTED RAW WEBSOCKET FRAME"),
+        }
+    }
+}
+
 pub(crate) fn post(host: String, uri: Uri, wire: String) {
     let key: [u8; 16] = rand::random();
     let request = http::request::Request::builder()

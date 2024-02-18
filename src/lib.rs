@@ -24,6 +24,14 @@ pub fn fetch_by_filter(url: &str, filter: Filter) -> Vec<Event> {
     fetch(host, uri, wire)
 }
 
+pub fn listen_by_filter<F>(url: &str, filter: Filter, op: F)
+where F: Fn(Event)
+{
+    let (host,uri) = url_to_host_and_uri(url);
+    let wire = filters_to_wire(vec![filter]);
+    listen(host, uri, wire, op)
+}
+
 pub fn fetch_by_id(url: &str, id: IdHex) -> Option<Event> {
     let mut filter = Filter::new();
     filter.add_id(&id);
