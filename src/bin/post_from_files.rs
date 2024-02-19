@@ -16,6 +16,7 @@ fn main() {
         None => panic!("Usage: post_from_files <RelayURL> <Directory>"),
     };
 
+    let mut events: Vec<Event> = Vec::new();
     for entry in fs::read_dir(directory).unwrap() {
         let entry = entry.unwrap();
         let mut file = fs::OpenOptions::new()
@@ -26,7 +27,8 @@ fn main() {
         file.read_to_string(&mut contents).unwrap();
         let event: Event = serde_json::from_str(&contents).unwrap();
         event.verify(None).unwrap();
-
-        nostr_bins::post_event(&relay_url, event);
+        events.push(event);
     }
+
+    nostr_bins::post_events(&relay_url, events);
 }

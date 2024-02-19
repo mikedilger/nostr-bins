@@ -50,6 +50,11 @@ pub fn post_event(url: &str, event: Event) {
     post(host, uri, wire)
 }
 
+pub fn post_events(url: &str, events: Vec<Event>) {
+    let (host,uri) = url_to_host_and_uri(url);
+    post_multi(host, uri, events)
+}
+
 pub fn print_event(event: &Event) {
     println!("{}", serde_json::to_string(event).expect("Cannot serialize event to JSON"));
 }

@@ -40,6 +40,7 @@ fn main() {
         .send()
         .unwrap();
     let json = response.text().unwrap();
+    println!("{}", &json);
     if let Ok(rid) = serde_json::from_str::<RelayInformationDocument>(&json) {
         println!("{}", rid);
     } else {
