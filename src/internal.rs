@@ -77,7 +77,7 @@ pub(crate) fn fetch(host: String, uri: Uri, wire: String) -> Vec<Event> {
                         }
                     }
                     RelayMessage::Ok(_id, ok, reason) => {
-                        println!("OK: ok={} reason={}", ok, reason)
+                        println!("OK: ok={} reason={}", ok, reason);
                     }
                     RelayMessage::Auth(challenge) => {
                         // FIXME
@@ -203,39 +203,42 @@ pub(crate) fn post(host: String, uri: Uri, wire: String) {
 
     println!("Wrote message");
 
-    let message = match websocket.read_message() {
-        Ok(m) => m,
-        Err(e) => {
-            println!("Problem reading from websocket: {}", e);
-            return;
-        }
-    };
-
-    println!("Got response");
-
-    match message {
-        Message::Text(s) => {
-            let relay_message: RelayMessage =
-                serde_json::from_str(&s).expect(&s);
-            match relay_message {
-                RelayMessage::Event(_, e) => println!("EVENT: {}", serde_json::to_string(&e).unwrap()),
-                RelayMessage::Closed(_, msg) => println!("CLOSED: {}", msg),
-                RelayMessage::Notice(s) => println!("NOTICE: {}", s),
-                RelayMessage::Eose(_) => println!("EOSE"),
-                RelayMessage::Ok(_id, ok, reason) => println!("OK: ok={} reason={}", ok, reason),
-                RelayMessage::Auth(challenge) => println!("AUTH: {}", challenge),
+    loop {
+        let message = match websocket.read_message() {
+            Ok(m) => m,
+            Err(e) => {
+                println!("Problem reading from websocket: {}", e);
+                return;
             }
+        };
+
+        match message {
+            Message::Text(s) => {
+                let relay_message: RelayMessage =
+                    serde_json::from_str(&s).expect(&s);
+                match relay_message {
+                    RelayMessage::Event(_, e) => println!("EVENT: {}", serde_json::to_string(&e).unwrap()),
+                    RelayMessage::Closed(_, msg) => println!("CLOSED: {}", msg),
+                    RelayMessage::Notice(s) => println!("NOTICE: {}", s),
+                    RelayMessage::Eose(_) => println!("EOSE"),
+                    RelayMessage::Ok(_id, ok, reason) => {
+                        println!("OK: ok={} reason={}", ok, reason);
+                        return;
+                    },
+                    RelayMessage::Auth(challenge) => println!("AUTH: {}", challenge),
+                }
+            }
+            Message::Binary(_) => println!("IGNORING BINARY MESSAGE"),
+            Message::Ping(vec) => if let Err(e) = websocket.write_message(Message::Pong(vec)) {
+                println!("Unable to pong: {}", e);
+            }
+            Message::Pong(_) => println!("IGNORING PONG"),
+            Message::Close(_) => {
+                println!("Closing");
+                return;
+            }
+            Message::Frame(_) => println!("UNEXPECTED RAW WEBSOCKET FRAME"),
         }
-        Message::Binary(_) => println!("IGNORING BINARY MESSAGE"),
-        Message::Ping(vec) => if let Err(e) = websocket.write_message(Message::Pong(vec)) {
-            println!("Unable to pong: {}", e);
-        }
-        Message::Pong(_) => println!("IGNORING PONG"),
-        Message::Close(_) => {
-            println!("Closing");
-            return;
-        }
-        Message::Frame(_) => println!("UNEXPECTED RAW WEBSOCKET FRAME"),
     }
 }
 
@@ -290,4 +293,7 @@ pub(crate) fn send_message(host: String, uri: Uri, wire: String) {
         }
     }
 
+}
+
+fn display_message() {
 }
