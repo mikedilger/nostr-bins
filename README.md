@@ -1,3 +1,6 @@
 # nostr-bins
 
-Some command-line tools for nostr.
+THIS REPO IS DEAD.
+
+Consider its replacement: https://github.com/mikedilger/nostr-probe
+
